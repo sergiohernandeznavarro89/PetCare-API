@@ -24,5 +24,6 @@ namespace PetCare.API.Models
 
         // Navigation properties
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
+        public ICollection<Treatment> Treatments { get; set; } = new List<Treatment>();
     }
 }

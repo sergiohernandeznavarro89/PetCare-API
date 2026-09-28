@@ -23,6 +23,13 @@ namespace PetCare.API.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            // Configure one-to-many relationship User -> Treatments
+            modelBuilder.Entity<Treatment>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.Treatments)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

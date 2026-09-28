@@ -19,5 +19,11 @@ namespace PetCare.API.Models
         [Required]
         [MaxLength(50)]
         public string Type { get; set; } = string.Empty; // Vacuna, Pastilla, Pipeta, Collar
+
+        [Required]
+        public Guid UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
     }
 }
