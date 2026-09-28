@@ -1,9 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PetCare.API.Data;
 using PetCare.API.DTOs;
-using PetCare.API.Models;
+using PetCare.API.Features.Pets;
 using System.Security.Claims;
 
 namespace PetCare.API.Controllers
@@ -13,11 +12,11 @@ namespace PetCare.API.Controllers
     [Authorize]
     public class PetsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IMediator _mediator;
 
-        public PetsController(AppDbContext context)
+        public PetsController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         private Guid GetCurrentUserId()
@@ -35,21 +34,7 @@ namespace PetCare.API.Controllers
         public async Task<ActionResult<IEnumerable<PetDto>>> GetPets()
         {
             var userId = GetCurrentUserId();
-
-            var pets = await _context.Pets
-                .Where(p => p.UserId == userId)
-                .Select(p => new PetDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Species = p.Species,
-                    Breed = p.Breed,
-                    DateOfBirth = p.DateOfBirth,
-                    PhotoUrl = p.PhotoUrl,
-                    CreatedAt = p.CreatedAt
-                })
-                .ToListAsync();
-
+            var pets = await _mediator.Send(new GetPetsQuery { UserId = userId });
             return Ok(pets);
         }
 
@@ -58,25 +43,11 @@ namespace PetCare.API.Controllers
         public async Task<ActionResult<PetDto>> GetPet(Guid id)
         {
             var userId = GetCurrentUserId();
+            var pet = await _mediator.Send(new GetPetByIdQuery { Id = id, UserId = userId });
 
-            var pet = await _context.Pets
-                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-
-            if (pet == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(new PetDto
-            {
-                Id = pet.Id,
-                Name = pet.Name,
-                Species = pet.Species,
-                Breed = pet.Breed,
-                DateOfBirth = pet.DateOfBirth,
-                PhotoUrl = pet.PhotoUrl,
-                CreatedAt = pet.CreatedAt
-            });
+            if (pet == null) return NotFound();
+            
+            return Ok(pet);
         }
 
         // POST: api/Pets
@@ -84,34 +55,9 @@ namespace PetCare.API.Controllers
         public async Task<ActionResult<PetDto>> PostPet(CreatePetDto dto)
         {
             var userId = GetCurrentUserId();
+            var pet = await _mediator.Send(new CreatePetCommand { Dto = dto, UserId = userId });
 
-            var pet = new Pet
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                Name = dto.Name,
-                Species = dto.Species,
-                Breed = dto.Breed,
-                DateOfBirth = dto.DateOfBirth?.ToUniversalTime(),
-                PhotoUrl = dto.PhotoUrl,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Pets.Add(pet);
-            await _context.SaveChangesAsync();
-
-            var petDto = new PetDto
-            {
-                Id = pet.Id,
-                Name = pet.Name,
-                Species = pet.Species,
-                Breed = pet.Breed,
-                DateOfBirth = pet.DateOfBirth,
-                PhotoUrl = pet.PhotoUrl,
-                CreatedAt = pet.CreatedAt
-            };
-
-            return CreatedAtAction(nameof(GetPet), new { id = pet.Id }, petDto);
+            return CreatedAtAction(nameof(GetPet), new { id = pet.Id }, pet);
         }
 
         // PUT: api/Pets/{id}
@@ -119,21 +65,9 @@ namespace PetCare.API.Controllers
         public async Task<IActionResult> PutPet(Guid id, CreatePetDto dto)
         {
             var userId = GetCurrentUserId();
+            var success = await _mediator.Send(new UpdatePetCommand { Id = id, Dto = dto, UserId = userId });
 
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-
-            if (pet == null)
-            {
-                return NotFound();
-            }
-
-            pet.Name = dto.Name;
-            pet.Species = dto.Species;
-            pet.Breed = dto.Breed;
-            pet.DateOfBirth = dto.DateOfBirth?.ToUniversalTime();
-            pet.PhotoUrl = dto.PhotoUrl;
-
-            await _context.SaveChangesAsync();
+            if (!success) return NotFound();
 
             return NoContent();
         }
@@ -143,15 +77,9 @@ namespace PetCare.API.Controllers
         public async Task<IActionResult> DeletePet(Guid id)
         {
             var userId = GetCurrentUserId();
+            var success = await _mediator.Send(new DeletePetCommand { Id = id, UserId = userId });
 
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-            if (pet == null)
-            {
-                return NotFound();
-            }
-
-            _context.Pets.Remove(pet);
-            await _context.SaveChangesAsync();
+            if (!success) return NotFound();
 
             return NoContent();
         }

@@ -1,12 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using PetCare.API.Data;
 using PetCare.API.DTOs;
-using PetCare.API.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using PetCare.API.Features.Auth;
 
 namespace PetCare.API.Controllers
 {
@@ -14,88 +9,38 @@ namespace PetCare.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly IMediator _mediator;
 
-        public AuthController(AppDbContext context, IConfiguration configuration)
+        public AuthController(IMediator mediator)
         {
-            _context = context;
-            _configuration = configuration;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+            try
             {
-                return BadRequest("User with this email already exists.");
+                var response = await _mediator.Send(new RegisterUserCommand { Dto = dto });
+                return Ok(response);
             }
-
-            var user = new User
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                Email = dto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            var token = GenerateJwtToken(user);
-
-            return Ok(new AuthResponseDto
-            {
-                Token = token,
-                UserId = user.Id,
-                Email = user.Email
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var response = await _mediator.Send(new LoginUserCommand { Dto = dto });
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+            if (response == null)
             {
                 return Unauthorized("Invalid email or password.");
             }
 
-            var token = GenerateJwtToken(user);
-
-            return Ok(new AuthResponseDto
-            {
-                Token = token,
-                UserId = user.Id,
-                Email = user.Email
-            });
-        }
-
-        private string GenerateJwtToken(User user)
-        {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"] ?? throw new ArgumentNullException("JwtSettings:Secret");
-            
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Ok(response);
         }
     }
 }
