@@ -27,6 +27,8 @@ namespace PetCare.API.Models
 
         public bool IsActive { get; set; } = true;
 
+        public bool Notify { get; set; } = true;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
