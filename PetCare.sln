@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.API", "PetCare.API.csproj", "{F06D1699-45B3-4A58-924F-54DE2A720CCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.API.Tests", "..\PetCare.API.Tests\PetCare.API.Tests.csproj", "{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{F06D1699-45B3-4A58-924F-54DE2A720CCF}.Release|x64.Build.0 = Release|Any CPU
 		{F06D1699-45B3-4A58-924F-54DE2A720CCF}.Release|x86.ActiveCfg = Release|Any CPU
 		{F06D1699-45B3-4A58-924F-54DE2A720CCF}.Release|x86.Build.0 = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|x64.Build.0 = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Debug|x86.Build.0 = Debug|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|x64.ActiveCfg = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|x64.Build.0 = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|x86.ActiveCfg = Release|Any CPU
+		{ED0B5CC4-8F12-49D0-A766-18F940B58B3B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

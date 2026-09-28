@@ -5,6 +5,10 @@ using PetCare.API.Features.Auth;
 
 namespace PetCare.API.Controllers
 {
+    /// <summary>
+    /// Controlador encargado de gestionar la autenticación de usuarios.
+    /// Contiene los endpoints para el registro y el inicio de sesión.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -16,6 +20,11 @@ namespace PetCare.API.Controllers
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Registra un nuevo usuario en el sistema.
+        /// </summary>
+        /// <param name="dto">Los datos de registro (email, password).</param>
+        /// <returns>La información del usuario creado.</returns>
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto dto)
         {
@@ -30,17 +39,29 @@ namespace PetCare.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Inicia sesión en el sistema validando credenciales y obteniendo un token JWT.
+        /// </summary>
+        /// <param name="dto">Credenciales de inicio de sesión.</param>
+        /// <returns>Token JWT de acceso.</returns>
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
         {
-            var response = await _mediator.Send(new LoginUserCommand { Dto = dto });
-
-            if (response == null)
+            try
             {
-                return Unauthorized("Invalid email or password.");
-            }
+                var response = await _mediator.Send(new LoginUserCommand { Dto = dto });
 
-            return Ok(response);
+                if (response == null)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
     }
 }

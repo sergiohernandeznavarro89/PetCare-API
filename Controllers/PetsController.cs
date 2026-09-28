@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace PetCare.API.Controllers
 {
+    /// <summary>
+    /// Controlador responsable de gestionar las mascotas (CRUD).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -29,7 +32,10 @@ namespace PetCare.API.Controllers
             throw new UnauthorizedAccessException("User ID not found in token.");
         }
 
-        // GET: api/Pets
+        /// <summary>
+        /// Obtiene todas las mascotas del usuario autenticado.
+        /// </summary>
+        /// <returns>Una colección de mascotas.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PetDto>>> GetPets()
         {
@@ -38,7 +44,11 @@ namespace PetCare.API.Controllers
             return Ok(pets);
         }
 
-        // GET: api/Pets/{id}
+        /// <summary>
+        /// Obtiene una mascota concreta por su identificador.
+        /// </summary>
+        /// <param name="id">El ID único de la mascota.</param>
+        /// <returns>La información de la mascota solicitada.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<PetDto>> GetPet(Guid id)
         {
@@ -50,7 +60,11 @@ namespace PetCare.API.Controllers
             return Ok(pet);
         }
 
-        // POST: api/Pets
+        /// <summary>
+        /// Crea una nueva mascota y la asocia al usuario actual.
+        /// </summary>
+        /// <param name="dto">Los datos de la mascota a crear.</param>
+        /// <returns>La mascota recién creada.</returns>
         [HttpPost]
         public async Task<ActionResult<PetDto>> PostPet(CreatePetDto dto)
         {
@@ -60,7 +74,12 @@ namespace PetCare.API.Controllers
             return CreatedAtAction(nameof(GetPet), new { id = pet.Id }, pet);
         }
 
-        // PUT: api/Pets/{id}
+        /// <summary>
+        /// Actualiza la información de una mascota existente.
+        /// </summary>
+        /// <param name="id">El ID de la mascota a modificar.</param>
+        /// <param name="dto">Los nuevos datos.</param>
+        /// <returns>Respuesta HTTP NoContent o NotFound.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPet(Guid id, CreatePetDto dto)
         {
@@ -72,7 +91,11 @@ namespace PetCare.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Pets/{id}
+        /// <summary>
+        /// Elimina permanentemente a una mascota.
+        /// </summary>
+        /// <param name="id">El ID de la mascota a eliminar.</param>
+        /// <returns>Respuesta HTTP NoContent o NotFound.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePet(Guid id)
         {
