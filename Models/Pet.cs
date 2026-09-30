@@ -33,6 +33,6 @@ namespace PetCare.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
-        public ICollection<PetTreatment> PetTreatments { get; set; } = new List<PetTreatment>();
+        public ICollection<HealthEvent> HealthEvents { get; set; } = new List<HealthEvent>();
     }
 }

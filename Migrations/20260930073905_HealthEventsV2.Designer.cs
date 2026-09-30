@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetCare.API.Data;
@@ -11,9 +12,11 @@ using PetCare.API.Data;
 namespace PetCare.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260930073905_HealthEventsV2")]
+    partial class HealthEventsV2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,37 +138,6 @@ namespace PetCare.API.Migrations
                     b.HasDiscriminator<string>("HealthEventType").HasValue("HealthEvent");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("PetCare.API.Models.HealthEventOccurrence", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("HealthEventId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ScheduledDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HealthEventId");
-
-                    b.ToTable("HealthEventOccurrences");
                 });
 
             modelBuilder.Entity("PetCare.API.Models.Pet", b =>
@@ -360,17 +332,6 @@ namespace PetCare.API.Migrations
                     b.Navigation("ParentVisit");
 
                     b.Navigation("Pet");
-                });
-
-            modelBuilder.Entity("PetCare.API.Models.HealthEventOccurrence", b =>
-                {
-                    b.HasOne("PetCare.API.Models.HealthEvent", "HealthEvent")
-                        .WithMany()
-                        .HasForeignKey("HealthEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HealthEvent");
                 });
 
             modelBuilder.Entity("PetCare.API.Models.Pet", b =>
