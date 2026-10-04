@@ -13,7 +13,7 @@ Este archivo contiene las directrices, reglas de estilo y buenas prácticas que 
 
 ## 2. Pautas de Interacción y Gestión del Repositorio
 - **Control de Versiones (Git):** 
-  - **REGLA DE ORO:** NUNCA ejecutes un comando `git commit` o `git push` a menos que el usuario (yo) te lo pida de forma **explícita y directa**. 
+  - **REGLA DE ORO:** NUNCA ejecutes un comando `git commit`, `git push` ni generes una Pull Request (PR) a menos que el usuario (yo) te lo pida de forma **explícita y directa**. 
   - Limítate a escribir el código, compilar, hacer tests y probar, dejando que sea yo quien gestione, revise y suba los cambios finales al control de versiones.
 - **Cambios Pequeños e Iterativos:** Cuando te pida desarrollar una feature, hazlo paso a paso para asegurar que todo compila y funciona, en lugar de generar archivos gigantescos de una sola vez.
 

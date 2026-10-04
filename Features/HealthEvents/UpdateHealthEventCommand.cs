@@ -37,6 +37,8 @@ namespace PetCare.API.Features.HealthEvents
             entity.Title = request.EventDto.Title;
             entity.Notes = request.EventDto.Notes;
             entity.Weight = request.EventDto.Weight;
+            entity.ParentVisitId = string.IsNullOrEmpty(request.EventDto.ParentId) ? null : Guid.Parse(request.EventDto.ParentId);
+            entity.EndDate = request.EventDto.EndDate?.ToUniversalTime();
             entity.UpdatedAt = DateTime.UtcNow;
 
             switch (request.EventDto)
@@ -54,7 +56,6 @@ namespace PetCare.API.Features.HealthEvents
                     med.FrequencyValue = m.FrequencyValue;
                     med.FrequencyUnit = (FrequencyUnit)m.FrequencyUnit;
                     med.StartDate = m.StartDate.ToUniversalTime();
-                    med.EndDate = m.EndDate?.ToUniversalTime();
                     break;
                 case VaccineEventDto v when entity is VaccineEvent vac:
                     vac.VaccineName = v.VaccineName;
@@ -75,6 +76,10 @@ namespace PetCare.API.Features.HealthEvents
             
             _context.HealthEventOccurrences.RemoveRange(pendingOccurrences);
 
+            var existingCompleted = await _context.HealthEventOccurrences
+                .Where(o => o.HealthEventId == entity.Id && o.Status != OccurrenceStatus.Pending)
+                .ToListAsync(cancellationToken);
+
             int freqVal = 0;
             FrequencyUnit freqUnit = FrequencyUnit.Days;
             
@@ -84,11 +89,10 @@ namespace PetCare.API.Features.HealthEvents
 
             var newOccurrences = HealthEventOccurrenceGenerator.GenerateOccurrences(entity, freqVal, freqUnit);
             
-            // Queremos generar solo a partir de hoy o desde la fecha original si es futura.
-            // Para mantener simpleza, HealthEventOccurrenceGenerator reescribe basado en entity.Date, 
-            // pero podríamos descartar las que caen en el pasado. Lo dejaremos así por ahora 
-            // y luego filtraremos los pending en el pasado.
-            _context.HealthEventOccurrences.AddRange(newOccurrences);
+            var completedDates = existingCompleted.Select(c => c.ScheduledDate).ToHashSet();
+            var occurrencesToAdd = newOccurrences.Where(o => !completedDates.Contains(o.ScheduledDate)).ToList();
+
+            _context.HealthEventOccurrences.AddRange(occurrencesToAdd);
 
             await _context.SaveChangesAsync(cancellationToken);
 

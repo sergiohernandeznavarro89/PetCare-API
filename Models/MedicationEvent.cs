@@ -7,7 +7,8 @@ namespace PetCare.API.Models
         Hours,
         Days,
         Months,
-        Years
+        Years,
+        Weeks
     }
 
     public class MedicationEvent : HealthEvent

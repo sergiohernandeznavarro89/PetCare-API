@@ -29,8 +29,8 @@ namespace PetCare.API.Controllers
         public async Task<IActionResult> Complete(Guid id)
         {
             var result = await _mediator.Send(new CompleteOccurrenceCommand { UserId = GetUserId(), OccurrenceId = id });
-            if (!result) return NotFound();
-            return Ok();
+            if (!result.Success) return NotFound();
+            return Ok(result);
         }
 
         public class PostponeRequest { public DateTime NewDate { get; set; } }

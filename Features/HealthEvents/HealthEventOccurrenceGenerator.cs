@@ -48,6 +48,8 @@ namespace PetCare.API.Features.HealthEvents
                     current = current.AddMonths(frequencyValue);
                 else if (frequencyUnit == FrequencyUnit.Years)
                     current = current.AddYears(frequencyValue);
+                else if (frequencyUnit == FrequencyUnit.Weeks)
+                    current = current.AddDays(frequencyValue * 7);
                 
                 count++;
             }

@@ -28,12 +28,14 @@ namespace PetCare.API.Features.HealthEvents
             var eventType = await _context.EventTypeDefinitions.FindAsync(request.EventDto.EventType.Id);
             if (eventType == null) throw new ArgumentException("EventType no encontrado");
 
+            Guid? parentId = string.IsNullOrEmpty(request.EventDto.ParentId) ? null : Guid.Parse(request.EventDto.ParentId);
+
             HealthEvent entity = request.EventDto switch
             {
-                VetVisitEventDto v => new VetVisitEvent { PetId = v.PetId, EventTypeId = eventType.Id, Date = v.Date.ToUniversalTime(), Title = v.Title, Notes = v.Notes, Weight = v.Weight, VeterinarianName = v.VeterinarianName, ClinicName = v.ClinicName, Diagnosis = v.Diagnosis, IsHospitalization = v.IsHospitalization, DischargeDate = v.DischargeDate?.ToUniversalTime() },
-                MedicationEventDto m => new MedicationEvent { PetId = m.PetId, EventTypeId = eventType.Id, Date = m.Date.ToUniversalTime(), Title = m.Title, Notes = m.Notes, Weight = m.Weight, DrugName = m.DrugName, Dosage = m.Dosage, FrequencyValue = m.FrequencyValue, FrequencyUnit = (FrequencyUnit)m.FrequencyUnit, StartDate = m.StartDate.ToUniversalTime(), EndDate = m.EndDate?.ToUniversalTime() },
-                VaccineEventDto v => new VaccineEvent { PetId = v.PetId, EventTypeId = eventType.Id, Date = v.Date.ToUniversalTime(), Title = v.Title, Notes = v.Notes, Weight = v.Weight, VaccineName = v.VaccineName, FrequencyValue = v.FrequencyValue, FrequencyUnit = (FrequencyUnit)v.FrequencyUnit },
-                CustomHealthEventDto c => new CustomHealthEvent { PetId = c.PetId, EventTypeId = eventType.Id, Date = c.Date.ToUniversalTime(), Title = c.Title, Notes = c.Notes, Weight = c.Weight, FrequencyValue = c.FrequencyValue, FrequencyUnit = (FrequencyUnit)c.FrequencyUnit },
+                VetVisitEventDto v => new VetVisitEvent { PetId = v.PetId, EventTypeId = eventType.Id, Date = v.Date.ToUniversalTime(), Title = v.Title, Notes = v.Notes, Weight = v.Weight, VeterinarianName = v.VeterinarianName, ClinicName = v.ClinicName, Diagnosis = v.Diagnosis, IsHospitalization = v.IsHospitalization, DischargeDate = v.DischargeDate?.ToUniversalTime(), ParentVisitId = parentId, EndDate = v.EndDate?.ToUniversalTime() },
+                MedicationEventDto m => new MedicationEvent { PetId = m.PetId, EventTypeId = eventType.Id, Date = m.Date.ToUniversalTime(), Title = m.Title, Notes = m.Notes, Weight = m.Weight, DrugName = m.DrugName, Dosage = m.Dosage, FrequencyValue = m.FrequencyValue, FrequencyUnit = (FrequencyUnit)m.FrequencyUnit, StartDate = m.StartDate.ToUniversalTime(), EndDate = m.EndDate?.ToUniversalTime(), ParentVisitId = parentId },
+                VaccineEventDto v => new VaccineEvent { PetId = v.PetId, EventTypeId = eventType.Id, Date = v.Date.ToUniversalTime(), Title = v.Title, Notes = v.Notes, Weight = v.Weight, VaccineName = v.VaccineName, FrequencyValue = v.FrequencyValue, FrequencyUnit = (FrequencyUnit)v.FrequencyUnit, ParentVisitId = parentId, EndDate = v.EndDate?.ToUniversalTime() },
+                CustomHealthEventDto c => new CustomHealthEvent { PetId = c.PetId, EventTypeId = eventType.Id, Date = c.Date.ToUniversalTime(), Title = c.Title, Notes = c.Notes, Weight = c.Weight, FrequencyValue = c.FrequencyValue, FrequencyUnit = (FrequencyUnit)c.FrequencyUnit, ParentVisitId = parentId, EndDate = c.EndDate?.ToUniversalTime() },
                 _ => throw new NotImplementedException()
             };
 

@@ -32,10 +32,10 @@ namespace PetCare.API.Controllers
         }
 
         [HttpGet("history")]
-        public async Task<ActionResult<IEnumerable<HealthEventDto>>> GetHistory(Guid petId)
+        public async Task<ActionResult<IEnumerable<HealthEventDto>>> GetHistory(Guid petId, [FromQuery] int skip = 0, [FromQuery] int take = 20)
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await _mediator.Send(new GetHealthHistoryQuery { UserId = userId, PetId = petId });
+            var result = await _mediator.Send(new GetHealthHistoryQuery { UserId = userId, PetId = petId, Skip = skip, Take = take });
             return Ok(result);
         }
 
@@ -55,6 +55,15 @@ namespace PetCare.API.Controllers
             var result = await _mediator.Send(new UpdateHealthEventCommand { UserId = userId, EventId = eventId, EventDto = eventDto });
             if (result == null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpPost("{eventId}/extend")]
+        public async Task<IActionResult> Extend(Guid petId, Guid eventId)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await _mediator.Send(new ExtendHealthEventCommand { UserId = userId, EventId = eventId });
+            if (!result) return NotFound();
+            return Ok();
         }
 
         [HttpDelete("{eventId}")]
