@@ -26,6 +26,10 @@ namespace PetCare.API.DTOs
         public string Title { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public decimal? Weight { get; set; }
+        public string? ParentId { get; set; }
+        public bool HasCompletedOccurrences { get; set; }
+        public DateTime? EndDate { get; set; }
+        public List<HealthEventOccurrenceDto>? Occurrences { get; set; }
     }
 
     public class VetVisitEventDto : HealthEventDto
@@ -44,7 +48,6 @@ namespace PetCare.API.DTOs
         public int FrequencyValue { get; set; }
         public int FrequencyUnit { get; set; } // Map to enum integer or string
         public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
     }
 
     public class VaccineEventDto : HealthEventDto

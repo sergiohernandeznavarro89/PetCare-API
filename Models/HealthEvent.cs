@@ -18,5 +18,6 @@ namespace PetCare.API.Models
         public DateTime? EndDate { get; set; }
         public Guid? ParentVisitId { get; set; }
         public VetVisitEvent? ParentVisit { get; set; }
+        public ICollection<HealthEventOccurrence> Occurrences { get; set; } = new List<HealthEventOccurrence>();
     }
 }
