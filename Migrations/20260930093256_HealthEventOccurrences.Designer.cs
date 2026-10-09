@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetCare.API.Data;
@@ -11,9 +12,11 @@ using PetCare.API.Data;
 namespace PetCare.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260930093256_HealthEventOccurrences")]
+    partial class HealthEventOccurrences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,7 +71,7 @@ namespace PetCare.API.Migrations
                             Color = "orange",
                             CreatedAt = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Icon = "medication",
-                            Name = "Medicación"
+                            Name = "MedicaciÃ³n"
                         },
                         new
                         {
@@ -76,7 +79,7 @@ namespace PetCare.API.Migrations
                             Color = "red",
                             CreatedAt = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Icon = "vaccines",
-                            Name = "Vacunación"
+                            Name = "VacunaciÃ³n"
                         });
                 });
 
